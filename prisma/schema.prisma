@@ -1,0 +1,89 @@
+// Data types: https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#model-field-scalar-types
+// Relations: https://www.prisma.io/docs/concepts/components/prisma-schema/relations
+// Atributos (ex: @default): https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#attributes
+// Prisma Client queries: https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#attributes
+// Queries usage: https://www.prisma.io/docs/concepts/components/prisma-client/crud
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// By default all fields are obligatory, ? indicates that is optional
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  lists List[]
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  lists      List[] @relation("UserLists")
+  likedLists List[] @relation("LikedLists")
+  // https://www.prisma.io/docs/concepts/components/prisma-schema/relations#disambiguating-relations
+
+  followers     User[] @relation("Follows")
+  followedUsers User[] @relation("Follows")
+  // https://www.prisma.io/docs/concepts/components/prisma-schema/relations/self-relations#many-to-many-self-relations
+}
+
+model List {
+  id        Int      @id @default(autoincrement())
+  draft     Boolean  @default(true)
+  title     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  userId Int
+  user   User @relation("UserLists", fields: [userId], references: [id], onDelete: Cascade)
+
+  likers User[] @relation("LikedLists")
+  // https://www.prisma.io/docs/concepts/components/prisma-schema/relations/many-to-many-relations#implicit-many-to-many-relations
+
+  listItems ListItem[]
+
+  @@index([createdAt])
+}
+
+model ListItem {
+  id                      Int      @id @default(autoincrement())
+  external_api_identifier String
+  details                 String?
+  imageUrl                String?
+  rank                    Int
+  title                   String
+  userComment             String
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  listId Int
+  list   List @relation(fields: [listId], references: [id], onDelete: Cascade)
+}
+
+
+
+// Exemplo de interações pelo banco com o prisma-repl --verbose
+// const l2 = await db.list.create({data: {title: 'l2', categoryId: c2.id, userId: u1.id}})
+// await db.user.findMany()
+//  const f1 = await db.user.update({where: { id: 1}, data:{ followers: {connect: {id: 3}}}})
+// const l4 = await db.list.create({data: {title: 'l5', category: {connect: {id: 1}}, user: {connect: {id: 3}}}})
+// await db.list.findFirst({where: {id: 2}, include: {category: true, user: true}})
+// li1 = await db.listItem.create({data: {external_api_identifier: '123', rank: 1, title: 'li1', userComment: 'nice', list: {connect: {id: 1}}}})
+// await db.list.findFirst({where: {id: 1}, include: {listItems: true}})
