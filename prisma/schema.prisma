@@ -83,7 +83,9 @@ model ListItem {
 // const l2 = await db.list.create({data: {title: 'l2', categoryId: c2.id, userId: u1.id}})
 // await db.user.findMany()
 //  const f1 = await db.user.update({where: { id: 1}, data:{ followers: {connect: {id: 3}}}})
+
 // const l4 = await db.list.create({data: {title: 'l5', category: {connect: {id: 1}}, user: {connect: {id: 3}}}})
+
 // await db.list.findFirst({where: {id: 2}, include: {category: true, user: true}})
 // li1 = await db.listItem.create({data: {external_api_identifier: '123', rank: 1, title: 'li1', userComment: 'nice', list: {connect: {id: 1}}}})
 // await db.list.findFirst({where: {id: 1}, include: {listItems: true}})

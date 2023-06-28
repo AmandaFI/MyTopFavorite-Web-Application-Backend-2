@@ -26,6 +26,7 @@ async function bootstrap() {
     }),
   );
 
+  // Essa linha deve ficar por último
   await app.listen(3001);
 }
 bootstrap();

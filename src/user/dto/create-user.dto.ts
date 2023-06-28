@@ -1,13 +1,17 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateSessionDto {
+export class CreateUserDto {
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'E-mail can not be empty.' })
   readonly email: string;
 
   @IsString()
   @IsNotEmpty()
   readonly password: string;
+
+  @IsString()
+  @IsNotEmpty()
+  readonly name: string;
 }
 
 // https://www.npmjs.com/package/class-validator
