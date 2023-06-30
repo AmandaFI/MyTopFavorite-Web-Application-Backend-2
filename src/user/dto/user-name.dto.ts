@@ -1,8 +1,8 @@
-import { IsInt } from 'class-validator';
+import { IsString } from 'class-validator';
 
-export class FollowUnfollowUserDto {
-  @IsInt()
-  readonly userId: number;
+export class UserNameDto {
+  @IsString()
+  readonly name: string;
 }
 
 // https://www.npmjs.com/package/class-validator

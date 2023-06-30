@@ -13,7 +13,7 @@ import {
 import { UserService } from 'src/user/user.service';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { User } from '@prisma/client';
-import { UserEntity } from 'src/user/entities/user.entity';
+import { BasicUserEntity } from 'src/user/entities/basicUser';
 import { Request } from 'express';
 import {
   AuthenticateUserGuard,
@@ -30,6 +30,7 @@ declare module 'express-session' {
 export class SessionController {
   constructor(private readonly userService: UserService) {}
 
+  // login
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(
@@ -44,6 +45,7 @@ export class SessionController {
     return this.serialize(user);
   }
 
+  // logout
   @UseGuards(AuthenticateUserGuard)
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -58,6 +60,6 @@ export class SessionController {
   }
 
   private serialize(user: User) {
-    return new UserEntity(user);
+    return new BasicUserEntity(user);
   }
 }

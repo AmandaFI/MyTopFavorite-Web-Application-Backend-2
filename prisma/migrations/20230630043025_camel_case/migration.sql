@@ -32,7 +32,7 @@ CREATE TABLE "List" (
 -- CreateTable
 CREATE TABLE "ListItem" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "external_api_identifier" TEXT NOT NULL,
+    "externalApiIdentifier" TEXT NOT NULL,
     "details" TEXT,
     "imageUrl" TEXT,
     "rank" INTEGER NOT NULL,

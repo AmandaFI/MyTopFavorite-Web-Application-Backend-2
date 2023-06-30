@@ -1,10 +1,9 @@
 import { List, User } from '@prisma/client';
 import { Exclude, Expose, Type } from 'class-transformer';
-import { UserService } from '../user.service';
 
 //https://docs.nestjs.com/techniques/serialization
 
-export class UserEntity implements User {
+export class CompleteUserEntity implements User {
   id: number;
   name: string;
   email: string;
@@ -29,7 +28,7 @@ export class UserEntity implements User {
     return this.lists.length;
   }
 
-  constructor(partial: Partial<UserEntity>) {
+  constructor(partial: Partial<CompleteUserEntity>) {
     Object.assign(this, partial);
   }
 }

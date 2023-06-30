@@ -7,10 +7,11 @@ import { CategoryController } from './category/category.controller';
 import { SessionController } from './session/session.controller';
 import { UserService } from './user/user.service';
 import { UserController } from './user/user.controller';
+import { ListService } from './list/list.service';
 
 @Module({
   imports: [],
   controllers: [AppController, CategoryController, SessionController, UserController],
-  providers: [AppService, PrismaService, CategoryService, UserService],
+  providers: [AppService, PrismaService, CategoryService, UserService, ListService],
 })
 export class AppModule {}

@@ -3,6 +3,8 @@
 // Atributos (ex: @default): https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#attributes
 // Prisma Client queries: https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#attributes
 // Queries usage: https://www.prisma.io/docs/concepts/components/prisma-client/crud
+// Queries filters:  https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#filter-conditions-and-operators
+// Queries filters: https://www.prisma.io/docs/concepts/components/prisma-client/filtering-and-sorting
 
 generator client {
   provider = "prisma-client-js"
@@ -64,7 +66,7 @@ model List {
 
 model ListItem {
   id                      Int      @id @default(autoincrement())
-  external_api_identifier String
+  externalApiIdentifier String
   details                 String?
   imageUrl                String?
   rank                    Int
