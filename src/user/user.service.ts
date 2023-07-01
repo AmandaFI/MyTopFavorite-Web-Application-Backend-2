@@ -97,33 +97,6 @@ export class UserService {
       perPage = this.pagination(perPage);
     }
 
-    return this.prisma.user.findFirst({
-      where: { id: loggedUserId },
-      include: {
-        lists: {
-          skip: perPage * (page - 1),
-          take: perPage,
-          where: { draft: false },
-          orderBy: { createdAt: 'desc' },
-          include: {
-            category: { select: { id: true, name: true } },
-            user: true,
-            listItems: {
-              select: {
-                id: true,
-                externalApiIdentifier: true,
-                imageUrl: true,
-                details: true,
-                rank: true,
-                userComment: true,
-              },
-            },
-            likers: true,
-          },
-        },
-      },
-    });
-
     // return this.prisma.user.findFirst({
     //   where: { id: loggedUserId },
     //   include: {
@@ -133,14 +106,41 @@ export class UserService {
     //       where: { draft: false },
     //       orderBy: { createdAt: 'desc' },
     //       include: {
-    //         category: true,
+    //         category: { select: { id: true, name: true } },
     //         user: true,
-    //         listItems: true,
+    //         listItems: {
+    //           select: {
+    //             id: true,
+    //             externalApiIdentifier: true,
+    //             imageUrl: true,
+    //             details: true,
+    //             rank: true,
+    //             userComment: true,
+    //           },
+    //         },
     //         likers: true,
     //       },
     //     },
     //   },
     // });
+
+    return this.prisma.user.findFirst({
+      where: { id: loggedUserId },
+      include: {
+        lists: {
+          skip: perPage * (page - 1),
+          take: perPage,
+          where: { draft: false },
+          orderBy: { createdAt: 'desc' },
+          include: {
+            category: true,
+            user: true,
+            listItems: true,
+            likers: true,
+          },
+        },
+      },
+    });
   }
 
   private pagination(perPageParam: number) {

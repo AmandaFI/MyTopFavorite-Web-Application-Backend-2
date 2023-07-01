@@ -160,7 +160,9 @@ export class UserController {
     // NO MOMENTO ESTA SEM SERIALIZADOR
     // TEM A OPCAO DE NAO USAR SERIALIZDOR E BARRA NA QUERRY
     // OU DESCOBRIR COMO FUNCIONA O SERIALIZADOR
-    if (user) return user.lists;
+    if (user) return user;
+
+    // if (user) return new CompleteListEntity(user.lists);
   }
 
   @Get(':id')
