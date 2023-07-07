@@ -3,6 +3,13 @@ import { PrismaService } from 'src/prisma.service';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
 
+export interface FindListIncludeRelationsInterface {
+  category?: boolean;
+  listItems?: boolean;
+  user?: boolean;
+  likers?: boolean;
+}
+
 @Injectable()
 export class ListService {
   constructor(private readonly prisma: PrismaService) {}
@@ -12,25 +19,27 @@ export class ListService {
 
   find(
     id: number,
-    category: boolean = false,
-    listItems: boolean = false,
-    user: boolean = false,
+    {
+      category = false,
+      listItems = false,
+      user = false,
+      likers = false,
+    }: FindListIncludeRelationsInterface = {},
   ) {
     return this.prisma.list.findUnique({
       where: { id },
-      include: {
-        category,
-        listItems,
-        user,
-      },
+      include: { category, listItems, user, likers },
     });
   }
 
   findMany(
     id: number,
-    category: boolean = false,
-    listItems: boolean = false,
-    user: boolean = false,
+    {
+      category = false,
+      listItems = false,
+      user = false,
+      likers = false,
+    }: FindListIncludeRelationsInterface = {},
   ) {
     return this.prisma.list.findMany({
       where: { id },
@@ -38,17 +47,9 @@ export class ListService {
         category,
         listItems,
         user,
+        likers,
       },
     });
-
-    // return this.prisma.list.findMany({
-    //   where: { id },
-    //   include: {
-    //     category: { select: { id: true, name: true } },
-    //     listItems,
-    //     user,
-    //   },
-    // });
   }
 
   create(id: number, list: CreateListDto) {
@@ -87,7 +88,11 @@ export class ListService {
   draftLists(userId: number) {
     return this.prisma.list.findMany({
       where: { userId, draft: true },
-      include: { category: true },
+      include: {
+        category: true,
+        listItems: true,
+        likers: true,
+      },
     });
   }
 
@@ -105,7 +110,11 @@ export class ListService {
       skip: perPage * (page - 1),
       take: perPage,
       where: { userId, draft: false },
-      include: { category: true, listItems: paginationPage !== undefined },
+      include: {
+        category: true,
+        listItems: true,
+        likers: true,
+      },
     });
   }
 

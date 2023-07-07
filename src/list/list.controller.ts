@@ -13,7 +13,6 @@ import {
   Query,
   Req,
   UnprocessableEntityException,
-  UnsupportedMediaTypeException,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -23,8 +22,9 @@ import {
 import { ListService } from './list.service';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
-
-// DECIDIR SERIALIZADORES
+import { CompleteListEntity } from './entities/completeList';
+import { BasicListEntity } from './entities/basicList';
+import { List } from '@prisma/client';
 
 @Controller('api/lists')
 @UseGuards(AuthenticateUserGuard)
@@ -35,7 +35,7 @@ export class ListController {
   async draftLists(@Req() req: AuthenticatedRequest) {
     const lists = await this.listService.draftLists(req.currentUser.id);
 
-    if (lists) return lists;
+    if (lists) return lists.map((list) => this.basicSerialize(list));
     else throw new NotFoundException();
   }
 
@@ -50,28 +50,32 @@ export class ListController {
 
     const lists = await this.listService.publishedLists(id, page, perPage);
 
-    if (lists) return lists;
+    if (lists) return lists.map((list) => this.basicSerialize(list));
     else throw new NotFoundException();
   }
 
   @Get(':id')
   async show(@Param('id', ParseIntPipe) id: number) {
-    const list = await this.listService.find(id, true, true, true);
+    const list = await this.listService.find(id, {
+      category: true,
+      user: true,
+      listItems: true,
+      likers: true,
+    });
 
-    if (list) return list;
+    if (list) return this.completeSerialize(list);
     else throw new NotFoundException();
   }
 
   @Get()
   async index(@Req() req: AuthenticatedRequest) {
-    const lists = await this.listService.findMany(
-      req.currentUser.id,
-      true,
-      false,
-      false,
-    );
+    const lists = await this.listService.findMany(req.currentUser.id, {
+      category: true,
+      listItems: true,
+      likers: true,
+    });
 
-    if (lists) return lists;
+    if (lists) return lists.map((list) => this.basicSerialize(list));
     else throw new NotFoundException();
   }
 
@@ -92,7 +96,7 @@ export class ListController {
   async create(@Req() req: AuthenticatedRequest, @Body() list: CreateListDto) {
     const createdList = await this.listService.create(req.currentUser.id, list);
 
-    if (createdList) return createdList;
+    if (createdList) return this.basicSerialize(createdList);
     else throw new UnprocessableEntityException();
   }
 
@@ -104,7 +108,7 @@ export class ListController {
   ) {
     const updatedList = await this.listService.update(id, list);
 
-    if (updatedList) return updatedList;
+    if (updatedList) return this.basicSerialize(updatedList);
     else throw new UnprocessableEntityException();
   }
 
@@ -125,5 +129,13 @@ export class ListController {
     const list = await this.listService.delete(id);
 
     if (!list) throw new UnprocessableEntityException();
+  }
+
+  private basicSerialize(list: List) {
+    return new BasicListEntity(list);
+  }
+
+  private completeSerialize(list: List) {
+    return new CompleteListEntity(list);
   }
 }

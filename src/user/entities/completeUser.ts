@@ -1,5 +1,6 @@
 import { List, User } from '@prisma/client';
-import { Exclude, Expose, Type } from 'class-transformer';
+import { Exclude, Expose, Transform, Type } from 'class-transformer';
+import { CompleteListEntity } from 'src/list/entities/completeList';
 
 //https://docs.nestjs.com/techniques/serialization
 
@@ -28,7 +29,17 @@ export class CompleteUserEntity implements User {
     return this.lists.length;
   }
 
-  constructor(partial: Partial<CompleteUserEntity>) {
-    Object.assign(this, partial);
+  // @Transform(({ value }) => value.length)
+  // followers: User[];
+
+  // @Transform(({ value }) => value.length)
+  // followedUsers: User[];
+
+  // @Transform(({ value }) => value.length)
+  // lists: List[];
+
+  constructor({ lists, ...data }: Partial<CompleteUserEntity>) {
+    Object.assign(this, data);
+    if (lists) this.lists = lists.map((list) => new CompleteListEntity(list));
   }
 }

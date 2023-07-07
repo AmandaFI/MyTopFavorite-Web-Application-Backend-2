@@ -3,6 +3,7 @@ import { Category, List, ListItem, User } from '@prisma/client';
 import { CategoryEntity } from 'src/category/entities/category.entity';
 import { CompleteUserEntity } from 'src/user/entities/completeUser';
 import { BasicListItemEntity } from 'src/list-item/entities/basicListItem';
+import { BasicUserEntity } from 'src/user/entities/basicUser';
 
 export class CompleteListEntity implements List {
   id: number;
@@ -10,13 +11,11 @@ export class CompleteListEntity implements List {
   title: string;
   createdAt: Date;
 
-  // category: CategoryEntity;
   // listItems: BasicListItemEntity[];
-  // user: CompleteUserEntity;
 
-  category: Category;
+  category: CategoryEntity;
   listItems: ListItem[];
-  user: User;
+  user: BasicUserEntity;
 
   @Exclude() updatedAt: Date;
   @Exclude() categoryId: number;
@@ -24,12 +23,14 @@ export class CompleteListEntity implements List {
   @Exclude() likers: User[];
 
   @Expose()
-  get likersCount(): number {
+  get likersCount(): number | undefined {
     return this.likers.length;
   }
 
-  constructor(partial: Partial<CompleteListEntity>) {
-    Object.assign(this, partial);
+  constructor({ user, category, ...data }: Partial<CompleteListEntity>) {
+    Object.assign(this, data);
+    if (user) this.user = new BasicUserEntity(user);
+    if (category) this.category = new CategoryEntity(category);
   }
 }
 
