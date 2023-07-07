@@ -18,6 +18,9 @@ import { AuthenticateUserGuard } from 'src/authorization/guards/authenticate.gua
 import { ListItemService } from './list-item.service';
 import { CreateListItemDto } from './dto/create-listItem.dto';
 import { UpdateListItemDto } from './dto/update-listItem.dto';
+import { ListItem } from '@prisma/client';
+import { BasicListItemEntity } from './entities/basicListItem';
+import { CompleteListItemEntity } from './entities/completeListItem';
 
 // DECIDIR SERIALIZADORES
 
@@ -28,17 +31,18 @@ export class ListItemController {
 
   @Get(':id')
   async show(@Param('id', ParseIntPipe) id: number) {
-    const listItem = this.listItemService.find(id, true);
+    const listItem = await this.listItemService.find(id);
 
-    if (listItem) return listItem;
+    if (listItem) return this.completeSerializer(listItem);
     else throw new NotFoundException();
   }
 
   @Get()
   async index(@Query('list_id', ParseIntPipe) listId: number) {
-    const listItems = this.listItemService.findMany(listId);
+    const listItems = await this.listItemService.findMany(listId);
 
-    if (listItems) return listItems;
+    if (listItems)
+      return listItems.map((listItem) => this.basicSerializer(listItem));
     else throw new NotFoundException();
   }
 
@@ -47,7 +51,7 @@ export class ListItemController {
   async create(@Body() listItem: CreateListItemDto) {
     const createdListItem = await this.listItemService.create(listItem);
 
-    if (createdListItem) return createdListItem;
+    if (createdListItem) return this.basicSerializer(createdListItem);
     else throw new UnprocessableEntityException();
   }
 
@@ -59,7 +63,7 @@ export class ListItemController {
   ) {
     const updatedListItem = await this.listItemService.update(id, listItem);
 
-    if (updatedListItem) return updatedListItem;
+    if (updatedListItem) return this.basicSerializer(updatedListItem);
     else throw new UnprocessableEntityException();
   }
 
@@ -69,5 +73,13 @@ export class ListItemController {
     const listItem = await this.listItemService.delete(id);
 
     if (!listItem) throw new UnprocessableEntityException();
+  }
+
+  private basicSerializer(listItem: ListItem) {
+    return new BasicListItemEntity(listItem);
+  }
+
+  private completeSerializer(listItem: ListItem) {
+    return new CompleteListItemEntity(listItem);
   }
 }

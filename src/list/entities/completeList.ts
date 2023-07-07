@@ -1,7 +1,6 @@
 import { Exclude, Expose, Type } from 'class-transformer';
 import { Category, List, ListItem, User } from '@prisma/client';
 import { CategoryEntity } from 'src/category/entities/category.entity';
-import { CompleteUserEntity } from 'src/user/entities/completeUser';
 import { BasicListItemEntity } from 'src/list-item/entities/basicListItem';
 import { BasicUserEntity } from 'src/user/entities/basicUser';
 
@@ -11,11 +10,11 @@ export class CompleteListEntity implements List {
   title: string;
   createdAt: Date;
 
-  // listItems: BasicListItemEntity[];
-
   category: CategoryEntity;
-  listItems: ListItem[];
+  listItems: BasicListItemEntity[];
   user: BasicUserEntity;
+
+  likedByCurrentUser?: boolean;
 
   @Exclude() updatedAt: Date;
   @Exclude() categoryId: number;
@@ -27,10 +26,17 @@ export class CompleteListEntity implements List {
     return this.likers.length;
   }
 
-  constructor({ user, category, ...data }: Partial<CompleteListEntity>) {
+  constructor(
+    { user, category, listItems, ...data }: Partial<CompleteListEntity>,
+    likedByCurrentUser?: boolean,
+  ) {
     Object.assign(this, data);
     if (user) this.user = new BasicUserEntity(user);
     if (category) this.category = new CategoryEntity(category);
+    if (listItems)
+      this.listItems = listItems.map((item) => new BasicListItemEntity(item));
+    if (likedByCurrentUser !== undefined)
+      this.likedByCurrentUser = likedByCurrentUser;
   }
 }
 

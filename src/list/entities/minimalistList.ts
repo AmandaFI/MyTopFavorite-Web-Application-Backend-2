@@ -2,7 +2,7 @@ import { Exclude, Expose } from 'class-transformer';
 import { List, ListItem, User } from '@prisma/client';
 import { CategoryEntity } from 'src/category/entities/category.entity';
 
-export class BasicListEntity implements List {
+export class MinimalistListEntity implements List {
   id: number;
   draft: boolean;
   title: string;
@@ -16,17 +16,7 @@ export class BasicListEntity implements List {
   @Exclude() userId: number;
   @Exclude() likers: User[];
 
-  @Expose()
-  get likersCount(): number {
-    return this.likers ? this.likers.length : 0;
-  }
-
-  @Expose()
-  get itemsCount(): number {
-    return this.listItems ? this.listItems.length : 0;
-  }
-
-  constructor({ category, ...data }: Partial<BasicListEntity>) {
+  constructor({ category, ...data }: Partial<MinimalistListEntity>) {
     Object.assign(this, data);
     if (category) this.category = new CategoryEntity(category);
   }

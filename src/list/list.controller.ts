@@ -25,6 +25,7 @@ import { UpdateListDto } from './dto/update-list.dto';
 import { CompleteListEntity } from './entities/completeList';
 import { BasicListEntity } from './entities/basicList';
 import { List } from '@prisma/client';
+import { MinimalistListEntity } from './entities/minimalistList';
 
 @Controller('api/lists')
 @UseGuards(AuthenticateUserGuard)
@@ -55,7 +56,10 @@ export class ListController {
   }
 
   @Get(':id')
-  async show(@Param('id', ParseIntPipe) id: number) {
+  async show(
+    @Req() req: AuthenticatedRequest,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
     const list = await this.listService.find(id, {
       category: true,
       user: true,
@@ -63,8 +67,14 @@ export class ListController {
       likers: true,
     });
 
-    if (list) return this.completeSerialize(list);
-    else throw new NotFoundException();
+    if (list) {
+      const likedByUser = await this.listService.checkLiker(
+        id,
+        req.currentUser.id,
+      );
+      const likedByCurrentUser = likedByUser ? true : false;
+      return this.completeSerialize(list, likedByCurrentUser);
+    } else throw new NotFoundException();
   }
 
   @Get()
@@ -135,7 +145,11 @@ export class ListController {
     return new BasicListEntity(list);
   }
 
-  private completeSerialize(list: List) {
-    return new CompleteListEntity(list);
+  private minimalistSerialize(list: List) {
+    return new MinimalistListEntity(list);
+  }
+
+  private completeSerialize(list: List, likedByUser?: boolean) {
+    return new CompleteListEntity(list, likedByUser);
   }
 }

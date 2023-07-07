@@ -118,6 +118,15 @@ export class ListService {
     });
   }
 
+  checkLiker(listId: number, userId: number) {
+    return this.prisma.list.findFirst({
+      where: {
+        id: listId,
+        likers: { some: { id: userId } },
+      },
+    });
+  }
+
   private pagination(perPageParam: number) {
     const perPage =
       perPageParam < this.MAX_PER_PAGE ? perPageParam : this.MAX_PER_PAGE;

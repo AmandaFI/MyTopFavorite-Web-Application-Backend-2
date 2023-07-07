@@ -8,10 +8,10 @@ import { UpdateListItemDto } from './dto/update-listItem.dto';
 export class ListItemService {
   constructor(private readonly prisma: PrismaService) {}
 
-  find(id: ListItem['id'], list: boolean = false) {
+  find(id: ListItem['id']) {
     return this.prisma.listItem.findUnique({
       where: { id },
-      include: { list },
+      include: { list: { include: { category: true } } },
     });
   }
 
