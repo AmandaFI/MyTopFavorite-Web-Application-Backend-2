@@ -12,6 +12,7 @@ import {
   Put,
   Query,
   Req,
+  SerializeOptions,
   UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
@@ -22,10 +23,8 @@ import {
 import { ListService } from './list.service';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
-import { CompleteListEntity } from './entities/completeList';
-import { BasicListEntity } from './entities/basicList';
 import { List } from '@prisma/client';
-import { MinimalistListEntity } from './entities/minimalistList';
+import { ListEntity } from './entities/list.entity';
 
 @Controller('api/lists')
 @UseGuards(AuthenticateUserGuard)
@@ -33,14 +32,20 @@ export class ListController {
   constructor(private readonly listService: ListService) {}
 
   @Get('draft_lists')
+  @SerializeOptions({
+    groups: ['basicList'],
+  })
   async draftLists(@Req() req: AuthenticatedRequest) {
     const lists = await this.listService.draftLists(req.currentUser.id);
 
-    if (lists) return lists.map((list) => this.basicSerialize(list));
+    if (lists) return lists.map((list) => this.serialize(list));
     else throw new NotFoundException();
   }
 
   @Get(':id/published_lists')
+  @SerializeOptions({
+    groups: ['basicList'],
+  })
   async publishedLists(
     @Param('id', ParseIntPipe) id: number,
     @Query('page') pageParam?: string,
@@ -51,11 +56,14 @@ export class ListController {
 
     const lists = await this.listService.publishedLists(id, page, perPage);
 
-    if (lists) return lists.map((list) => this.basicSerialize(list));
+    if (lists) return lists.map((list) => this.serialize(list));
     else throw new NotFoundException();
   }
 
   @Get(':id')
+  @SerializeOptions({
+    groups: ['completeList'],
+  })
   async show(
     @Req() req: AuthenticatedRequest,
     @Param('id', ParseIntPipe) id: number,
@@ -73,11 +81,14 @@ export class ListController {
         req.currentUser.id,
       );
       const likedByCurrentUser = likedByUser ? true : false;
-      return this.completeSerialize(list, likedByCurrentUser);
+      return this.serialize(list, likedByCurrentUser);
     } else throw new NotFoundException();
   }
 
   @Get()
+  @SerializeOptions({
+    groups: ['basicList'],
+  })
   async index(@Req() req: AuthenticatedRequest) {
     const lists = await this.listService.findMany(req.currentUser.id, {
       category: true,
@@ -85,7 +96,7 @@ export class ListController {
       likers: true,
     });
 
-    if (lists) return lists.map((list) => this.basicSerialize(list));
+    if (lists) return lists.map((list) => this.serialize(list));
     else throw new NotFoundException();
   }
 
@@ -101,16 +112,22 @@ export class ListController {
     else throw new UnprocessableEntityException();
   }
 
+  @SerializeOptions({
+    groups: ['basicList'],
+  })
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(@Req() req: AuthenticatedRequest, @Body() list: CreateListDto) {
     const createdList = await this.listService.create(req.currentUser.id, list);
 
-    if (createdList) return this.basicSerialize(createdList);
+    if (createdList) return this.serialize(createdList);
     else throw new UnprocessableEntityException();
   }
 
   @Put(':id')
+  @SerializeOptions({
+    groups: ['basicList'],
+  })
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -118,7 +135,7 @@ export class ListController {
   ) {
     const updatedList = await this.listService.update(id, list);
 
-    if (updatedList) return this.basicSerialize(updatedList);
+    if (updatedList) return this.serialize(updatedList);
     else throw new UnprocessableEntityException();
   }
 
@@ -141,15 +158,7 @@ export class ListController {
     if (!list) throw new UnprocessableEntityException();
   }
 
-  private basicSerialize(list: List) {
-    return new BasicListEntity(list);
-  }
-
-  private minimalistSerialize(list: List) {
-    return new MinimalistListEntity(list);
-  }
-
-  private completeSerialize(list: List, likedByUser?: boolean) {
-    return new CompleteListEntity(list, likedByUser);
+  private serialize(list: List, likedByUser?: boolean) {
+    return new ListEntity(list, likedByUser);
   }
 }

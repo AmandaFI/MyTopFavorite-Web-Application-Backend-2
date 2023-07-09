@@ -13,16 +13,14 @@ import {
   UnprocessableEntityException,
   UseGuards,
   Query,
+  SerializeOptions,
 } from '@nestjs/common';
 import { AuthenticateUserGuard } from 'src/authorization/guards/authenticate.guard';
 import { ListItemService } from './list-item.service';
 import { CreateListItemDto } from './dto/create-listItem.dto';
 import { UpdateListItemDto } from './dto/update-listItem.dto';
 import { ListItem } from '@prisma/client';
-import { BasicListItemEntity } from './entities/basicListItem';
-import { CompleteListItemEntity } from './entities/completeListItem';
-
-// DECIDIR SERIALIZADORES
+import { ListItemEntity } from './entities/listItem.entity';
 
 @Controller('api/list_items')
 @UseGuards(AuthenticateUserGuard)
@@ -30,10 +28,13 @@ export class ListItemController {
   constructor(private readonly listItemService: ListItemService) {}
 
   @Get(':id')
+  @SerializeOptions({
+    groups: ['completeListItem'],
+  })
   async show(@Param('id', ParseIntPipe) id: number) {
     const listItem = await this.listItemService.find(id);
 
-    if (listItem) return this.completeSerializer(listItem);
+    if (listItem) return this.serialize(listItem);
     else throw new NotFoundException();
   }
 
@@ -41,8 +42,7 @@ export class ListItemController {
   async index(@Query('list_id', ParseIntPipe) listId: number) {
     const listItems = await this.listItemService.findMany(listId);
 
-    if (listItems)
-      return listItems.map((listItem) => this.basicSerializer(listItem));
+    if (listItems) return listItems.map((listItem) => this.serialize(listItem));
     else throw new NotFoundException();
   }
 
@@ -51,7 +51,7 @@ export class ListItemController {
   async create(@Body() listItem: CreateListItemDto) {
     const createdListItem = await this.listItemService.create(listItem);
 
-    if (createdListItem) return this.basicSerializer(createdListItem);
+    if (createdListItem) return this.serialize(createdListItem);
     else throw new UnprocessableEntityException();
   }
 
@@ -63,7 +63,7 @@ export class ListItemController {
   ) {
     const updatedListItem = await this.listItemService.update(id, listItem);
 
-    if (updatedListItem) return this.basicSerializer(updatedListItem);
+    if (updatedListItem) return this.serialize(updatedListItem);
     else throw new UnprocessableEntityException();
   }
 
@@ -75,11 +75,7 @@ export class ListItemController {
     if (!listItem) throw new UnprocessableEntityException();
   }
 
-  private basicSerializer(listItem: ListItem) {
-    return new BasicListItemEntity(listItem);
-  }
-
-  private completeSerializer(listItem: ListItem) {
-    return new CompleteListItemEntity(listItem);
+  private serialize(listItem: ListItem) {
+    return new ListItemEntity(listItem);
   }
 }

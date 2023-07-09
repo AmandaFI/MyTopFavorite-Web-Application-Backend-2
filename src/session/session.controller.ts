@@ -13,12 +13,12 @@ import {
 import { UserService } from 'src/user/user.service';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { User } from '@prisma/client';
-import { BasicUserEntity } from 'src/user/entities/basicUser';
 import { Request } from 'express';
 import {
   AuthenticateUserGuard,
   AuthenticatedRequest,
 } from 'src/authorization/guards/authenticate.guard';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 declare module 'express-session' {
   export interface SessionData {
@@ -60,6 +60,6 @@ export class SessionController {
   }
 
   private serialize(user: User) {
-    return new BasicUserEntity(user);
+    return new UserEntity(user);
   }
 }

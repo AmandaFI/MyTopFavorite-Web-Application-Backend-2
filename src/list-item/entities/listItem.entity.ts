@@ -1,7 +1,8 @@
 import { ListItem } from '@prisma/client';
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
+import { ListEntity } from 'src/list/entities/list.entity';
 
-export class BasicListItemEntity implements ListItem {
+export class ListItemEntity implements ListItem {
   id: number;
   title: string;
   externalApiIdentifier: string;
@@ -10,12 +11,16 @@ export class BasicListItemEntity implements ListItem {
   rank: number;
   userComment: string;
 
+  @Expose({ groups: ['completeListItem'] })
+  list: ListEntity;
+
   @Exclude() listId: number;
   @Exclude() createdAt: Date;
   @Exclude() updatedAt: Date;
 
-  constructor(partial: Partial<BasicListItemEntity>) {
-    Object.assign(this, partial);
+  constructor({ list, ...data }: Partial<ListItemEntity>) {
+    Object.assign(this, data);
+    if (list) this.list = new ListEntity(list);
   }
 }
 

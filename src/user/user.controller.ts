@@ -12,12 +12,12 @@ import {
   Put,
   Query,
   Req,
+  SerializeOptions,
   UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { User } from '@prisma/client';
-import { BasicUserEntity } from './entities/basicUser';
+import { List, User } from '@prisma/client';
 import {
   AuthenticateUserGuard,
   AuthenticatedRequest,
@@ -25,18 +25,24 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserIdDto } from './dto/user-id.dto';
-import { throwError } from 'rxjs';
-import { CompleteUserEntity } from './entities/completeUser';
 import { UserNameDto } from './dto/user-name.dto';
-import { CompleteListEntity } from 'src/list/entities/completeList';
+import { UserEntity } from './entities/user.entity';
+import { ListEntity } from 'src/list/entities/list.entity';
+import { ListService } from 'src/list/list.service';
 
 @Controller('api/users')
 @UseGuards(AuthenticateUserGuard)
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly listService: ListService,
+  ) {}
 
   @Post('follow')
   @HttpCode(HttpStatus.CREATED)
+  @SerializeOptions({
+    groups: ['basicUser'],
+  })
   async follow(@Req() req: AuthenticatedRequest, @Body() data: UserIdDto) {
     const followedUsers = await this.userService.follow(
       req.currentUser.id,
@@ -50,37 +56,46 @@ export class UserController {
         true,
         true,
       );
-      if (followedUser) return this.completeSerialize(followedUser);
+      if (followedUser) return this.serialize(followedUser);
       else throw new NotFoundException();
     } else throw new UnprocessableEntityException();
   }
 
   @Post('find_users')
   @HttpCode(HttpStatus.CREATED)
+  @SerializeOptions({
+    groups: ['basicUser'],
+  })
   async findUsers(@Req() req: AuthenticatedRequest, @Body() data: UserNameDto) {
     const users = await this.userService.findUsersByName(data.name);
 
-    return users.map((user) => this.basicSerialize(user));
+    return users.map((user) => this.serialize(user));
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @SerializeOptions({
+    groups: ['basicUser'],
+  })
   async create(@Body() createUser: CreateUserDto) {
     const user = await this.userService.create(createUser);
 
-    if (user) return this.basicSerialize(user);
+    if (user) return this.serialize(user);
     else throw new UnprocessableEntityException();
   }
 
   @Put(':id')
   @HttpCode(HttpStatus.OK)
+  @SerializeOptions({
+    groups: ['basicUser'],
+  })
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updatedUser: UpdateUserDto,
   ) {
     const user = await this.userService.update(id, updatedUser);
 
-    if (user) return this.basicSerialize(user);
+    if (user) return this.serialize(user);
     else throw new UnprocessableEntityException();
   }
 
@@ -102,17 +117,23 @@ export class UserController {
   }
 
   @Get(':id/check_following')
+  @SerializeOptions({
+    groups: ['basicUser'],
+  })
   async checkFollowing(
     @Req() req: AuthenticatedRequest,
     @Param('id', ParseIntPipe) id: number,
   ) {
     const user = await this.userService.checkFollowing(req.currentUser.id, id);
 
-    if (user) return this.basicSerialize(user);
+    if (user) return this.serialize(user);
     else throw new NotFoundException();
   }
 
   @Get('followed_users')
+  @SerializeOptions({
+    groups: ['basicUser'],
+  })
   async followedUsers(@Req() req: AuthenticatedRequest) {
     const user = await this.userService.find(
       req.currentUser.id,
@@ -122,11 +143,14 @@ export class UserController {
     );
 
     if (user) {
-      return user.followedUsers.map((user) => this.basicSerialize(user));
+      return user.followedUsers.map((user) => this.serialize(user));
     } else throw new NotFoundException();
   }
 
   @Get('followers')
+  @SerializeOptions({
+    groups: ['basicUser'],
+  })
   async followers(@Req() req: AuthenticatedRequest) {
     const user = await this.userService.find(
       req.currentUser.id,
@@ -136,13 +160,16 @@ export class UserController {
     );
 
     if (user) {
-      return user.followers.map((user) => this.basicSerialize(user));
+      return user.followers.map((user) => this.serialize(user));
     } else throw new NotFoundException();
   }
 
   // ao usar a pipe ParseIntPipe, o Query param se torna obrigatório
   // par ser opcional basta remover o pipe e não esquecer de fazer o parse para number
   @Get('followed_users_lists')
+  @SerializeOptions({
+    groups: ['completeList'],
+  })
   async followedUserLists(
     @Req() req: AuthenticatedRequest,
     @Query('page') pageParam?: string,
@@ -157,34 +184,49 @@ export class UserController {
       perPage,
     );
 
-    // NO MOMENTO ESTA SEM SERIALIZADOR
-    // TEM A OPCAO DE NAO USAR SERIALIZDOR E BARRA NA QUERRY
-    // OU DESCOBRIR COMO FUNCIONA O SERIALIZADOR
-    if (user) return user;
+    // if (user) {
+    //   return user.lists.map(async (list) => {
+    //     const likedByCurrentUser = (await this.listService.checkLiker(
+    //       list.id,
+    //       req.currentUser.id,
+    //     ))
+    //       ? true
+    //       : false;
+    //     const serializedList = this.serializeList(list, likedByCurrentUser);
+    //     console.log(serializedList);
+    //     return serializedList;
+    //   });
+    // }
 
-    // if (user) return new CompleteListEntity(user.lists);
+    if (user) return user.lists;
   }
 
   @Get(':id')
+  @SerializeOptions({
+    groups: ['completeUser'],
+  })
   async show(@Param('id', ParseIntPipe) id: number) {
     const user = await this.userService.find(id, true, true, true);
 
-    if (user) return this.completeSerialize(user);
+    if (user) return this.serialize(user);
     else throw new NotFoundException();
   }
 
   @Get()
+  @SerializeOptions({
+    groups: ['basicUser'],
+  })
   async index() {
     const users = await this.userService.findAll();
 
-    return users.map((user) => this.basicSerialize(user));
+    return users.map((user) => this.serialize(user));
   }
 
-  private basicSerialize(user: User) {
-    return new BasicUserEntity(user);
+  private serialize(user: User) {
+    return new UserEntity(user);
   }
 
-  private completeSerialize(user: User) {
-    return new CompleteUserEntity(user);
+  private serializeList(list: List, likedByUser?: boolean) {
+    return new ListEntity(list, likedByUser);
   }
 }
