@@ -19,6 +19,12 @@ import {
   AuthenticatedRequest,
 } from 'src/authorization/guards/authenticate.guard';
 import { UserEntity } from 'src/user/entities/user.entity';
+import {
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 declare module 'express-session' {
   export interface SessionData {
@@ -26,6 +32,7 @@ declare module 'express-session' {
   }
 }
 
+@ApiTags('sessions')
 @Controller('api/sessions')
 export class SessionController {
   constructor(private readonly userService: UserService) {}
@@ -33,6 +40,10 @@ export class SessionController {
   // login
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @ApiCreatedResponse({
+    description: 'Successful login.',
+    type: UserEntity,
+  })
   async create(
     @Body() createSessionDto: CreateSessionDto,
     @Req() req: Request,
@@ -49,12 +60,19 @@ export class SessionController {
   @UseGuards(AuthenticateUserGuard)
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse({
+    description: 'Successful login.',
+  })
   async logout(@Req() req: AuthenticatedRequest) {
     req.session.currentUserId = undefined;
   }
 
   @UseGuards(AuthenticateUserGuard)
   @Get('status')
+  @ApiOkResponse({
+    description: 'Current logged user.',
+    type: [UserEntity],
+  })
   async status(@Req() req: AuthenticatedRequest) {
     return this.serialize(req.currentUser);
   }

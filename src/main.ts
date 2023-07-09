@@ -28,6 +28,7 @@ async function bootstrap() {
   );
 
   // https://docs.nestjs.com/openapi/introduction
+  // All decorators with Api in the name are from swagger
   const config = new DocumentBuilder()
     .setTitle('My Top Favorite - Nest')
     .setDescription('The My Top Favorite API description')

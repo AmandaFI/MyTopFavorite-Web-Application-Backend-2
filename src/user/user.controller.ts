@@ -29,7 +29,14 @@ import { UserNameDto } from './dto/user-name.dto';
 import { UserEntity } from './entities/user.entity';
 import { ListEntity } from 'src/list/entities/list.entity';
 import { ListService } from 'src/list/list.service';
+import {
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('users')
 @Controller('api/users')
 @UseGuards(AuthenticateUserGuard)
 export class UserController {
@@ -42,6 +49,10 @@ export class UserController {
   @HttpCode(HttpStatus.CREATED)
   @SerializeOptions({
     groups: ['basicUser'],
+  })
+  @ApiCreatedResponse({
+    description: 'User followed.',
+    type: UserEntity,
   })
   async follow(@Req() req: AuthenticatedRequest, @Body() data: UserIdDto) {
     const followedUsers = await this.userService.follow(
@@ -66,6 +77,10 @@ export class UserController {
   @SerializeOptions({
     groups: ['basicUser'],
   })
+  @ApiCreatedResponse({
+    description: 'Users found.',
+    type: [UserEntity],
+  })
   async findUsers(@Req() req: AuthenticatedRequest, @Body() data: UserNameDto) {
     const users = await this.userService.findUsersByName(data.name);
 
@@ -76,6 +91,10 @@ export class UserController {
   @HttpCode(HttpStatus.CREATED)
   @SerializeOptions({
     groups: ['basicUser'],
+  })
+  @ApiCreatedResponse({
+    description: 'User created.',
+    type: UserEntity,
   })
   async create(@Body() createUser: CreateUserDto) {
     const user = await this.userService.create(createUser);
@@ -89,6 +108,10 @@ export class UserController {
   @SerializeOptions({
     groups: ['basicUser'],
   })
+  @ApiOkResponse({
+    description: 'User updated.',
+    type: UserEntity,
+  })
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updatedUser: UpdateUserDto,
@@ -101,6 +124,9 @@ export class UserController {
 
   @Delete('unfollow')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse({
+    description: 'User unfollowed.',
+  })
   async unfollow(
     @Req() req: AuthenticatedRequest,
     @Query('user_id', ParseIntPipe) user_id: number,
@@ -112,6 +138,9 @@ export class UserController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse({
+    description: 'User deleted.',
+  })
   async destroy(@Param('id', ParseIntPipe) id: number) {
     const _user = this.userService.delete(id);
   }
@@ -119,6 +148,10 @@ export class UserController {
   @Get(':id/check_following')
   @SerializeOptions({
     groups: ['basicUser'],
+  })
+  @ApiOkResponse({
+    description: 'Relation checked.',
+    type: UserEntity,
   })
   async checkFollowing(
     @Req() req: AuthenticatedRequest,
@@ -133,6 +166,10 @@ export class UserController {
   @Get('followed_users')
   @SerializeOptions({
     groups: ['basicUser'],
+  })
+  @ApiOkResponse({
+    description: 'Followed users.',
+    type: [UserEntity],
   })
   async followedUsers(@Req() req: AuthenticatedRequest) {
     const user = await this.userService.find(
@@ -150,6 +187,10 @@ export class UserController {
   @Get('followers')
   @SerializeOptions({
     groups: ['basicUser'],
+  })
+  @ApiOkResponse({
+    description: 'Followers.',
+    type: [UserEntity],
   })
   async followers(@Req() req: AuthenticatedRequest) {
     const user = await this.userService.find(
@@ -169,6 +210,10 @@ export class UserController {
   @Get('followed_users_lists')
   @SerializeOptions({
     groups: ['completeList'],
+  })
+  @ApiOkResponse({
+    description: 'Lists of the users followed by the logged user.',
+    type: [UserEntity],
   })
   async followedUserLists(
     @Req() req: AuthenticatedRequest,
@@ -205,6 +250,10 @@ export class UserController {
   @SerializeOptions({
     groups: ['completeUser'],
   })
+  @ApiOkResponse({
+    description: 'User.',
+    type: UserEntity,
+  })
   async show(@Param('id', ParseIntPipe) id: number) {
     const user = await this.userService.find(id, true, true, true);
 
@@ -215,6 +264,10 @@ export class UserController {
   @Get()
   @SerializeOptions({
     groups: ['basicUser'],
+  })
+  @ApiOkResponse({
+    description: 'Users.',
+    type: [UserEntity],
   })
   async index() {
     const users = await this.userService.findAll();

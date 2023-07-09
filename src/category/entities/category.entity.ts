@@ -1,11 +1,12 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Category } from '@prisma/client';
 import { Exclude } from 'class-transformer';
 
 //https://docs.nestjs.com/techniques/serialization
 
 export class CategoryEntity implements Category {
-  id: number;
-  name: string;
+  @ApiProperty() id: number;
+  @ApiProperty() name: string;
 
   @Exclude() createdAt: Date;
   @Exclude() updatedAt: Date;

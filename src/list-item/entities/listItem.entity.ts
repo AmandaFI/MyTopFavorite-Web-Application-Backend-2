@@ -1,16 +1,18 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { ListItem } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
 import { ListEntity } from 'src/list/entities/list.entity';
 
 export class ListItemEntity implements ListItem {
-  id: number;
-  title: string;
-  externalApiIdentifier: string;
-  details: string | null;
-  imageUrl: string | null;
-  rank: number;
-  userComment: string;
+  @ApiProperty() id: number;
+  @ApiProperty() title: string;
+  @ApiProperty() externalApiIdentifier: string;
+  @ApiProperty() details: string | null;
+  @ApiProperty() imageUrl: string | null;
+  @ApiProperty() rank: number;
+  @ApiProperty() userComment: string;
 
+  @ApiProperty({ type: () => ListEntity })
   @Expose({ groups: ['completeListItem'] })
   list: ListEntity;
 
