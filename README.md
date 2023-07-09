@@ -1,3 +1,5 @@
+# My Top Favorite Web Application - NestJS Back End
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>
@@ -7,67 +9,100 @@
 
   <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
     <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+## Table of Content
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+1. [Application Overview](#application-overview)
+2. [Back End Description](#back-end-description)
+3. [Technologies](#technologies)
+4. [Installation](#installation)
+5. [Getting Started](#getting-started)
 
-## Installation
+---
+
+## **Application Overview** <a name="application-overview"></a>
+
+My Top Favorite is a social media platform where registered users can create, edit and share lists containing a rank of their favorite things of a certain theme. Along with each list item, the user has the option to attach a personalized text talking about the chosen item. Users can also follow other users to keep up with their listings.
+
+The platform is integrated with external APIs, therefore, when creating a list, the user can search for items belonging to that theme in reliable sources. As an example, a user creating a list of his favorite action movies will be able to search for them in the collection of the Tmdb platform.
+
+Currently the platform supports lists with themes related to movies, series and public personalities.The theme possibilities are endless and new themes will be supported soon!
+
+## **Back End Description** <a name="back-end-description"></a>
+
+The platform has two fully functional back end implementations that are interchangeable and this repository contains the NestJS version. The Ruby on Rails version can be found in [this repository](https://github.com/AmandaFI/MyTopFavorite-Web-Application-Backend) and the React front end implementation can be found in [this repository](https://github.com/AmandaFI/MyTopFavorite-Web-Application-Frontend).
+
+The API was implemented using the TypeScript programming language and the NestJS framework following the **REST** architectural design pattern. The chosen SQL database was SQlite and the Object Relational Mapping (ORM) system used was the Prisma.
+
+Following the NestJS patterns, the methods containing the Prisma interactions with the database were implemented in services separeted from the controllers. Therefore, **Dependency Injection** was used to provide these services where they were needed.
+
+For testing and validation of the API endpoints, the Swagger tool was used.
+
+As mentioned in the [overview](#Overview) section, only registered users can interact with the platform features, therefore the authentication process was implemented. The main branch implements authentication using **sessions and cookies**.
+
+Among the many features provided by this application, a logged user is able to access certain pages to see and interact ('Like') with lists shared by the users he follows. From the API point of view, lists displayed on this areas are fetched using the **offset pagination** type.
+
+## **Technologies** <a name="technologies"></a>
+
+- [NestJS](https://nestjs.com/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Prisma](https://www.prisma.io/)
+- [sqlite3](https://www.npmjs.com/package/sqlite3)
+- [Swagger](https://docs.nestjs.com/openapi/introduction)
+- [class-validator](https://www.npmjs.com/package/class-validator)
+
+## **Installation** <a name="installation"></a>
+
+To run this project locally the following prerequisites are necessary:
+
+- Node.js installed
+- npm installed
+
+If your system does not meet the mentioned prerequisites, install Node.js. npm is included with Node.js, so you don’t have to install it separately. The Node.js installation can be executed followig the commands bellow:
+
+### **Linux systems**
+
+1 - If not installed, install curl:
+
+```bash
+$ sudo apt install curl
+```
+
+2 - Find the correspondent curl command for your Linux distro in the [node repository](https://github.com/nodesource/distributions/blob/master/README.md#debinstall) and run it on bash. Example for Ubuntu:
+
+```bash
+$ curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - &&\
+```
+
+3 - Install the Node.js:
+
+```bash
+$ sudo apt-get install -y nodejs
+```
+
+### **macOS or Windows systems**
+
+Download macOs installer or Windows installer respectively from the [official site](https://nodejs.org/en/download) and follow the installation steps presented.
+
+## **Getting Started** <a name="getting-started"></a>
+
+If your system meets the mentioned prerequisites just clone this repository and run the following initialization commands:
+
+```bash
+$ git clone https://github.com/AmandaFI/MyTopFavorite-Web-Application-Backend-2.git
+$ cd MyTopFavorite-Web-Application-Backend-2
+```
+
+Install the project packages:
 
 ```bash
 $ npm install
 ```
 
-## Running the app
+Run the API server:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
 $ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
 
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+This server was configured to run on http://localhost:3001, however this can be changed if necessary.
