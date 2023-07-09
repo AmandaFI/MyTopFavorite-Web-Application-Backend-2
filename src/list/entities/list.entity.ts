@@ -52,3 +52,5 @@ export class ListEntity implements List {
 
 // https://www.npmjs.com/package/class-validator
 // https://dev.to/sarathsantoshdamaraju/nestjs-and-class-validator-cheat-sheet-13ao
+// https://docs.nestjs.com/techniques/serialization#pass-options
+// https://www.npmjs.com/package/@nestjs/class-transformer#using-groups-to-control-excluded-properties

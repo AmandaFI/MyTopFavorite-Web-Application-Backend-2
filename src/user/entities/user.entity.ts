@@ -34,3 +34,6 @@ export class UserEntity implements User {
     if (lists) this.lists = lists.map((list) => new ListEntity(list));
   }
 }
+
+// https://docs.nestjs.com/techniques/serialization#pass-options
+// https://www.npmjs.com/package/@nestjs/class-transformer#using-groups-to-control-excluded-properties
