@@ -11,7 +11,7 @@ export class ListItemService {
   find(id: ListItem['id']) {
     return this.prisma.listItem.findUnique({
       where: { id },
-      include: { list: { include: { category: true } } },
+      include: { list: true },
     });
   }
 
@@ -26,6 +26,7 @@ export class ListItemService {
     const { listId, ...props } = listItem;
     return this.prisma.listItem.create({
       data: { ...props, list: { connect: { id: listId } } },
+      include: { list: true },
     });
   }
 
@@ -33,6 +34,7 @@ export class ListItemService {
     return this.prisma.listItem.update({
       where: { id },
       data: { ...listItem },
+      include: { list: true },
     });
   }
 

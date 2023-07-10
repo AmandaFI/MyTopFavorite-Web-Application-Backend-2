@@ -63,6 +63,9 @@ export class ListItemController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @SerializeOptions({
+    groups: ['completeListItem'],
+  })
   @ApiCreatedResponse({
     description: 'Item created.',
     type: ListItemEntity,
@@ -76,6 +79,9 @@ export class ListItemController {
 
   @Put(':id')
   @HttpCode(HttpStatus.OK)
+  @SerializeOptions({
+    groups: ['completeListItem'],
+  })
   @ApiOkResponse({
     description: 'Item updated.',
     type: ListItemEntity,

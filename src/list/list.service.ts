@@ -60,11 +60,24 @@ export class ListService {
         user: { connect: { id } },
         category: { connect: { id: categoryId } },
       },
+      include: {
+        likers: true,
+        listItems: true,
+        category: true,
+      },
     });
   }
 
   update(id: number, list: UpdateListDto) {
-    return this.prisma.list.update({ where: { id }, data: { ...list } });
+    return this.prisma.list.update({
+      where: { id },
+      data: { ...list },
+      include: {
+        likers: true,
+        listItems: true,
+        category: true,
+      },
+    });
   }
 
   delete(id: number) {

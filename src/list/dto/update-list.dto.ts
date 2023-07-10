@@ -11,7 +11,7 @@ export class UpdateListDto {
   readonly title: string;
 
   @ApiProperty({
-    default: false,
+    default: true,
     required: false,
   })
   @IsBoolean()

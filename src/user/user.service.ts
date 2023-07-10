@@ -33,6 +33,7 @@ export class UserService {
   async authenticate(credentials: Pick<User, 'email' | 'password'>) {
     const user = await this.prisma.user.findFirst({
       where: { email: credentials.email },
+      include: { followedUsers: true, followers: true, lists: true },
     });
 
     if (user) {
@@ -61,7 +62,11 @@ export class UserService {
   }
 
   update(id: number, user: UpdateUserDto) {
-    return this.prisma.user.update({ where: { id }, data: { ...user } });
+    return this.prisma.user.update({
+      where: { id },
+      data: { ...user },
+      include: { followedUsers: true, followers: true, lists: true },
+    });
   }
 
   delete(id: number) {

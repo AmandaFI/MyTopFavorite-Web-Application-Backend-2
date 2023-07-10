@@ -5,8 +5,10 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  NotFoundException,
   Post,
   Req,
+  SerializeOptions,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
@@ -40,6 +42,9 @@ export class SessionController {
   // login
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @SerializeOptions({
+    groups: ['completeUser'],
+  })
   @ApiCreatedResponse({
     description: 'Successful login.',
     type: UserEntity,
@@ -69,12 +74,22 @@ export class SessionController {
 
   @UseGuards(AuthenticateUserGuard)
   @Get('status')
+  @SerializeOptions({
+    groups: ['completeUser'],
+  })
   @ApiOkResponse({
     description: 'Current logged user.',
     type: [UserEntity],
   })
   async status(@Req() req: AuthenticatedRequest) {
-    return this.serialize(req.currentUser);
+    const user = await this.userService.find(
+      req.currentUser.id,
+      true,
+      true,
+      true,
+    );
+    if (user) return this.serialize(user);
+    else throw new NotFoundException();
   }
 
   private serialize(user: User) {

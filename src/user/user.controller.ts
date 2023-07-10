@@ -107,7 +107,7 @@ export class UserController {
   @Put(':id')
   @HttpCode(HttpStatus.OK)
   @SerializeOptions({
-    groups: ['basicUser'],
+    groups: ['completeUser'],
   })
   @UseGuards(AuthenticateUserGuard)
   @ApiOkResponse({
@@ -237,21 +237,21 @@ export class UserController {
       perPage,
     );
 
-    // if (user) {
-    //   return user.lists.map(async (list) => {
-    //     const likedByCurrentUser = (await this.listService.checkLiker(
-    //       list.id,
-    //       req.currentUser.id,
-    //     ))
-    //       ? true
-    //       : false;
-    //     const serializedList = this.serializeList(list, likedByCurrentUser);
-    //     console.log(serializedList);
-    //     return serializedList;
-    //   });
-    // }
+    if (user) {
+      return user.lists.map(async (list) => {
+        const likedByCurrentUser = (await this.listService.checkLiker(
+          list.id,
+          req.currentUser.id,
+        ))
+          ? true
+          : false;
+        const serializedList = this.serializeList(list, likedByCurrentUser);
+        console.log(serializedList);
+        return serializedList;
+      });
+    }
 
-    if (user) return user.lists;
+    // if (user) return user.lists;
   }
 
   @Get(':id')

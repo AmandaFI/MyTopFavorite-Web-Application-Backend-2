@@ -21,7 +21,7 @@ export class CreateListDto {
   readonly categoryId: number;
 
   @ApiProperty({
-    default: false,
+    default: true,
     required: false,
   })
   @IsBoolean()
