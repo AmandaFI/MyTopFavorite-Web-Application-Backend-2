@@ -30,7 +30,7 @@ Currently the platform supports lists with themes related to movies, series and 
 
 ## **Back End Description** <a name="back-end-description"></a>
 
-The platform has two fully functional back end implementations that are interchangeable and this repository contains the NestJS version. The Ruby on Rails version can be found in [this repository](https://github.com/AmandaFI/MyTopFavorite-Web-Application-Backend) and the React front end implementation can be found in [this repository](https://github.com/AmandaFI/MyTopFavorite-Web-Application-Frontend).
+The platform has two fully functional back end (APIs) implementations that are interchangeable and this repository contains the NestJS version. The Ruby on Rails version can be found in [this repository](https://github.com/AmandaFI/MyTopFavorite-Web-Application-Backend) and the React front end implementation can be found in [this repository](https://github.com/AmandaFI/MyTopFavorite-Web-Application-Frontend).
 
 The API was implemented using the TypeScript programming language and the NestJS framework following the **REST** architectural design pattern. The chosen SQL database was SQlite and the Object Relational Mapping (ORM) system used was the Prisma.
 
