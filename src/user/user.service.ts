@@ -5,6 +5,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { connect } from 'http2';
 import { PaginationDto } from './dto/pagination.dto';
+import * as bcrypt from 'bcrypt';
 
 // https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#filter-conditions-and-operators
 // https://www.prisma.io/docs/concepts/components/prisma-client/filtering-and-sorting
@@ -15,6 +16,7 @@ export class UserService {
 
   DEFAULT_PER_PAGE = 3;
   MAX_PER_PAGE = 100;
+  SALT_OR_ROUNDS = 10;
 
   find(
     id: User['id'],
@@ -28,10 +30,16 @@ export class UserService {
     });
   }
 
-  authenticate(credentials: Pick<User, 'email' | 'password'>) {
-    return this.prisma.user.findFirst({
-      where: { email: credentials.email, password: credentials.password },
+  async authenticate(credentials: Pick<User, 'email' | 'password'>) {
+    const user = await this.prisma.user.findFirst({
+      where: { email: credentials.email },
     });
+
+    if (user) {
+      if (await bcrypt.compare(credentials.password, user.password))
+        return user;
+    }
+    return false;
   }
 
   findAll(
@@ -44,9 +52,11 @@ export class UserService {
     });
   }
 
-  create(user: CreateUserDto) {
+  //https://docs.nestjs.com/security/encryption-and-hashing
+  async create({ password, ...data }: CreateUserDto) {
+    const hash = await bcrypt.hash(password, this.SALT_OR_ROUNDS);
     return this.prisma.user.create({
-      data: { ...user },
+      data: { ...data, password: hash },
     });
   }
 

@@ -38,7 +38,6 @@ import {
 
 @ApiTags('users')
 @Controller('api/users')
-@UseGuards(AuthenticateUserGuard)
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -50,6 +49,7 @@ export class UserController {
   @SerializeOptions({
     groups: ['basicUser'],
   })
+  @UseGuards(AuthenticateUserGuard)
   @ApiCreatedResponse({
     description: 'User followed.',
     type: UserEntity,
@@ -77,6 +77,7 @@ export class UserController {
   @SerializeOptions({
     groups: ['basicUser'],
   })
+  @UseGuards(AuthenticateUserGuard)
   @ApiCreatedResponse({
     description: 'Users found.',
     type: [UserEntity],
@@ -108,6 +109,7 @@ export class UserController {
   @SerializeOptions({
     groups: ['basicUser'],
   })
+  @UseGuards(AuthenticateUserGuard)
   @ApiOkResponse({
     description: 'User updated.',
     type: UserEntity,
@@ -124,6 +126,7 @@ export class UserController {
 
   @Delete('unfollow')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(AuthenticateUserGuard)
   @ApiNoContentResponse({
     description: 'User unfollowed.',
   })
@@ -138,6 +141,7 @@ export class UserController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(AuthenticateUserGuard)
   @ApiNoContentResponse({
     description: 'User deleted.',
   })
@@ -149,6 +153,7 @@ export class UserController {
   @SerializeOptions({
     groups: ['basicUser'],
   })
+  @UseGuards(AuthenticateUserGuard)
   @ApiOkResponse({
     description: 'Relation checked.',
     type: UserEntity,
@@ -167,6 +172,7 @@ export class UserController {
   @SerializeOptions({
     groups: ['basicUser'],
   })
+  @UseGuards(AuthenticateUserGuard)
   @ApiOkResponse({
     description: 'Followed users.',
     type: [UserEntity],
@@ -188,6 +194,7 @@ export class UserController {
   @SerializeOptions({
     groups: ['basicUser'],
   })
+  @UseGuards(AuthenticateUserGuard)
   @ApiOkResponse({
     description: 'Followers.',
     type: [UserEntity],
@@ -211,6 +218,7 @@ export class UserController {
   @SerializeOptions({
     groups: ['completeList'],
   })
+  @UseGuards(AuthenticateUserGuard)
   @ApiOkResponse({
     description: 'Lists of the users followed by the logged user.',
     type: [UserEntity],
@@ -250,6 +258,7 @@ export class UserController {
   @SerializeOptions({
     groups: ['completeUser'],
   })
+  @UseGuards(AuthenticateUserGuard)
   @ApiOkResponse({
     description: 'User.',
     type: UserEntity,
@@ -265,6 +274,7 @@ export class UserController {
   @SerializeOptions({
     groups: ['basicUser'],
   })
+  @UseGuards(AuthenticateUserGuard)
   @ApiOkResponse({
     description: 'Users.',
     type: [UserEntity],
