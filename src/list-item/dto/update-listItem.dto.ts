@@ -5,20 +5,24 @@ export class UpdateListItemDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty({ message: 'Title can not be empty.' })
+  @IsOptional()
   readonly title: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty({ message: 'User comment can not be empty.' })
+  @IsOptional()
   readonly userComment: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty({ message: 'API Identifier can not be empty.' })
+  @IsOptional()
   readonly externalApiIdentifier: string;
 
   @ApiProperty()
   @IsInt()
+  @IsOptional()
   readonly rank: number;
 
   @ApiProperty({

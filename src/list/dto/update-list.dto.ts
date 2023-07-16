@@ -15,7 +15,6 @@ export class UpdateListDto {
     required: false,
   })
   @IsBoolean()
-  @IsNotEmpty()
   @IsOptional()
   readonly draft: boolean;
 }

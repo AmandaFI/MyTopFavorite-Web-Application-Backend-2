@@ -5,7 +5,7 @@ import { UpdateListDto } from './dto/update-list.dto';
 
 export interface FindListIncludeRelationsInterface {
   category?: boolean;
-  listItems?: boolean;
+  items?: boolean;
   user?: boolean;
   likers?: boolean;
 }
@@ -21,14 +21,14 @@ export class ListService {
     id: number,
     {
       category = false,
-      listItems = false,
+      items = false,
       user = false,
       likers = false,
     }: FindListIncludeRelationsInterface = {},
   ) {
     return this.prisma.list.findUnique({
       where: { id },
-      include: { category, listItems, user, likers },
+      include: { category, items, user, likers },
     });
   }
 
@@ -36,7 +36,7 @@ export class ListService {
     id: number,
     {
       category = false,
-      listItems = false,
+      items = false,
       user = false,
       likers = false,
     }: FindListIncludeRelationsInterface = {},
@@ -45,7 +45,7 @@ export class ListService {
       where: { id },
       include: {
         category,
-        listItems,
+        items,
         user,
         likers,
       },
@@ -62,7 +62,7 @@ export class ListService {
       },
       include: {
         likers: true,
-        listItems: true,
+        items: true,
         category: true,
       },
     });
@@ -74,7 +74,7 @@ export class ListService {
       data: { ...list },
       include: {
         likers: true,
-        listItems: true,
+        items: true,
         category: true,
       },
     });
@@ -103,7 +103,7 @@ export class ListService {
       where: { userId, draft: true },
       include: {
         category: true,
-        listItems: true,
+        items: true,
         likers: true,
       },
     });
@@ -125,7 +125,7 @@ export class ListService {
       where: { userId, draft: false },
       include: {
         category: true,
-        listItems: true,
+        items: true,
         likers: true,
       },
     });

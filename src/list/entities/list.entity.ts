@@ -20,7 +20,7 @@ export class ListEntity implements List {
 
   @ApiPropertyOptional({ type: () => [ListItemEntity] })
   @Expose({ groups: ['completeList'] })
-  listItems: ListItemEntity[];
+  items: ListItemEntity[];
 
   @ApiPropertyOptional({ type: () => UserEntity })
   @Expose({ groups: ['completeList'] })
@@ -39,18 +39,17 @@ export class ListEntity implements List {
   @ApiPropertyOptional()
   @Expose({ groups: ['basicList'] })
   get itemsCount(): number {
-    return this.listItems ? this.listItems.length : 0;
+    return this.items ? this.items.length : 0;
   }
 
   constructor(
-    { user, category, listItems, ...data }: Partial<ListEntity>,
+    { user, category, items, ...data }: Partial<ListEntity>,
     likedByCurrentUser?: boolean,
   ) {
     Object.assign(this, data);
     if (user) this.user = new UserEntity(user);
     if (category) this.category = new CategoryEntity(category);
-    if (listItems)
-      this.listItems = listItems.map((item) => new ListItemEntity(item));
+    if (items) this.items = items.map((item) => new ListItemEntity(item));
     if (likedByCurrentUser !== undefined)
       this.likedByCurrentUser = likedByCurrentUser;
   }

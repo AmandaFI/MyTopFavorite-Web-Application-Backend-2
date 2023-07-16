@@ -59,7 +59,7 @@ model List {
   likers User[] @relation("LikedLists")
   // https://www.prisma.io/docs/concepts/components/prisma-schema/relations/many-to-many-relations#implicit-many-to-many-relations
 
-  listItems ListItem[]
+  items ListItem[]
 
   @@index([createdAt])
 }

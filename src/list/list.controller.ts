@@ -91,7 +91,7 @@ export class ListController {
     const list = await this.listService.find(id, {
       category: true,
       user: true,
-      listItems: true,
+      items: true,
       likers: true,
     });
 
@@ -116,7 +116,7 @@ export class ListController {
   async index(@Req() req: AuthenticatedRequest) {
     const lists = await this.listService.findMany(req.currentUser.id, {
       category: true,
-      listItems: true,
+      items: true,
       likers: true,
     });
 

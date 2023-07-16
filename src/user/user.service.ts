@@ -102,8 +102,7 @@ export class UserService {
     });
   }
 
-  // RESOLVER PROBLEMA DE SERIALIZAR O USER
-  followedUsersLists(
+  async followedUsersLists(
     loggedUserId: number,
     page = 1,
     perPage = this.DEFAULT_PER_PAGE,
@@ -112,50 +111,32 @@ export class UserService {
       perPage = this.pagination(perPage);
     }
 
-    // return this.prisma.user.findFirst({
-    //   where: { id: loggedUserId },
-    //   include: {
-    //     lists: {
-    //       skip: perPage * (page - 1),
-    //       take: perPage,
-    //       where: { draft: false },
-    //       orderBy: { createdAt: 'desc' },
-    //       include: {
-    //         category: { select: { id: true, name: true } },
-    //         user: true,
-    //         listItems: {
-    //           select: {
-    //             id: true,
-    //             externalApiIdentifier: true,
-    //             imageUrl: true,
-    //             details: true,
-    //             rank: true,
-    //             userComment: true,
-    //           },
-    //         },
-    //         likers: true,
-    //       },
-    //     },
-    //   },
-    // });
+    const user = await this.find(loggedUserId, false, true, false);
 
-    return this.prisma.user.findFirst({
-      where: { id: loggedUserId },
-      include: {
-        lists: {
-          skip: perPage * (page - 1),
-          take: perPage,
-          where: { draft: false },
-          orderBy: { createdAt: 'desc' },
-          include: {
-            category: true,
-            user: true,
-            listItems: true,
-            likers: true,
-          },
-        },
-      },
-    });
+    if (user) {
+      return await Promise.all(
+        user?.followedUsers.map(async (followedUser) => {
+          const userLists = await this.prisma.user.findFirst({
+            where: { id: followedUser.id },
+            include: {
+              lists: {
+                skip: perPage * (page - 1),
+                take: perPage,
+                where: { draft: false },
+                orderBy: { createdAt: 'desc' },
+                include: {
+                  category: true,
+                  user: true,
+                  items: true,
+                  likers: true,
+                },
+              },
+            },
+          });
+          return userLists?.lists;
+        }),
+      );
+    }
   }
 
   private pagination(perPageParam: number) {

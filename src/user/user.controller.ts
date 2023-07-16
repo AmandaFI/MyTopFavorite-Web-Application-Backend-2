@@ -238,20 +238,23 @@ export class UserController {
     );
 
     if (user) {
-      return user.lists.map(async (list) => {
-        const likedByCurrentUser = (await this.listService.checkLiker(
-          list.id,
-          req.currentUser.id,
-        ))
-          ? true
-          : false;
-        const serializedList = this.serializeList(list, likedByCurrentUser);
-        console.log(serializedList);
-        return serializedList;
-      });
+      const usersLists = user.reduce(
+        (acc: Array<List>, lists) => [...acc, ...(lists as Array<List>)],
+        [],
+      );
+      return Promise.all(
+        usersLists.map(async (list) => {
+          const likedByCurrentUser = (await this.listService.checkLiker(
+            list.id,
+            req.currentUser.id,
+          ))
+            ? true
+            : false;
+          const serializedList = this.serializeList(list, likedByCurrentUser);
+          return serializedList;
+        }),
+      );
     }
-
-    // if (user) return user.lists;
   }
 
   @Get(':id')
