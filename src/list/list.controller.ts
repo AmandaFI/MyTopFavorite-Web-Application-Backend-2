@@ -56,7 +56,7 @@ export class ListController {
 
   @Get(':id/published_lists')
   @SerializeOptions({
-    groups: ['basicList'],
+    groups: ['completeList'],
   })
   @ApiOkResponse({
     description: 'User published lists.',
